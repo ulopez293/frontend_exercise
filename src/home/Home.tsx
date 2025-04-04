@@ -174,6 +174,7 @@ export const Home = () => {
                             <table className="w-full border-collapse border border-gray-300 text-sm sm:text-base">
                                 <thead>
                                     <tr className="bg-gray-200 text-xs sm:text-sm">
+                                        <th className="border p-2">ID Cliente</th>
                                         <th className="border p-2">nombre</th>
                                         <th className="border p-2">correo</th>
                                         <th className="border p-2">telefono</th>
@@ -184,6 +185,7 @@ export const Home = () => {
                                     {clientesFiltrados.filter(cliente => cliente.user_id === userData.id).map((cliente, index) => {
                                         return (
                                             <tr key={cliente._id ?? index} className="text-center">
+                                                <td className="border p-2">{cliente._id}</td>
                                                 <td className="border p-2">{cliente.nombre}</td>
                                                 <td className="border p-2">{cliente.correo}</td>
                                                 <td className="border p-2">{cliente.telefono}</td>
