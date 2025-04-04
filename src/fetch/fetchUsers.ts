@@ -15,7 +15,7 @@ export const fetchUsers = async (): Promise<User[]> => {
             "Authorization": `Bearer ${token}`
         }
     })
-    if (!response.ok) throw new Error("Error al obtener los traslados")
+    if (!response.ok) throw new Error("Error al obtener usuarios")
     
     const data = await response.json() as User[]
     return data

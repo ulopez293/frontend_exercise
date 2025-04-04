@@ -3,10 +3,14 @@ import IMG from '../../assets/img/icon.png'
 import profileIMG from '../../assets/img/profile.jpeg'
 import { useAtom } from 'jotai'
 import { userDataAtom } from '../../atoms/userDataAtom'
+import { useLocation } from 'react-router-dom'
 
 export const Menu = () => {
   const [, setUserData] = useAtom(userDataAtom)
+  const location = useLocation()
 
+  const isActive = (path: string) => location.pathname === path
+  
   return (
     <>
       <Navbar fluid rounded className="p-6 px-10 shadow-md" style={{ paddingLeft: `3rem`, paddingRight: `3rem` }}>
@@ -31,10 +35,16 @@ export const Menu = () => {
         </div>
         <Navbar.Collapse className="ml-auto">
           <Navbar.Link
-            href="/"
-            active={true}
+            href="/clientes"
+            active={isActive('/clientes')}
           >
-            <h1 className="text-xl">Registros</h1>
+            <h1 className="text-xl">Clientes</h1>
+          </Navbar.Link>
+          <Navbar.Link
+            href="/proyectos"
+            active={isActive('/proyectos')}
+          >
+            <h1 className="text-xl">Proyectos</h1>
           </Navbar.Link>
         </Navbar.Collapse>
       </Navbar>

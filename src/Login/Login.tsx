@@ -6,20 +6,17 @@ import { useAtom } from 'jotai'
 import { userDataAtom } from '../atoms/userDataAtom'
 import { Link } from 'react-router-dom'
 
-const credentials = {
-  email: 'admin@frontend.com',
-  password: 'Ll1820M8ZfjGHYj',
-}
 interface AuthResponse {
   message: string
   token: string
+  id: string
 }
 
 export const Login = () => {
   const [, setUserData] = useAtom(userDataAtom)
 
-  const [email, setEmail] = useState(credentials.email)
-  const [password, setPassword] = useState(credentials.password)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setEmail(e.target.value)
@@ -46,7 +43,7 @@ export const Login = () => {
 
       const data = (await response.json()) as AuthResponse
 
-      setUserData({ login: true, email, token: data.token })
+      setUserData({ login: true, email, token: data.token, id: data.id })
       alert("Login exitoso")
       console.log("Token recibido:", data.token)
       localStorage.setItem("authToken", data.token)
@@ -72,7 +69,7 @@ export const Login = () => {
               <div className="mb-2 block">
                 <Label htmlFor="email1" value="Tu email" />
               </div>
-              <TextInput id="email1" type="email" placeholder="example@frontend.com" required value={email} onChange={handleEmailChange} />
+              <TextInput id="email1" type="email" placeholder="example@gmail.com" required value={email} onChange={handleEmailChange} />
             </div>
             <div>
               <div className="mb-2 block">
@@ -80,11 +77,12 @@ export const Login = () => {
               </div>
               <TextInput id="password1" type="password" placeholder='********' required value={password} onChange={handlePasswordChange} />
             </div>
-            <Button type="submit">Enviar</Button>
+            <Button type="submit">Ingresar</Button>
           </form>
-          <div className='text-center initial w-full'>
+          <hr className='mt-3 mb-3' />
+          <div className="w-full flex justify-center">
             <Link to="/register">
-              <Button>Crear Usuario</Button>
+              <Button color="dark" pill>Crear Usuario</Button>
             </Link>
           </div>
         </Card>

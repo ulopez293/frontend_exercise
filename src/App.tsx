@@ -4,8 +4,19 @@ import { userDataAtom } from './atoms/userDataAtom'
 import { Menu } from './components/Menu/Menu'
 import useFlowBiteLoader from './hooks/Flowbite/useFlowBiteLoader'
 import { Home } from './home/Home'
-import { Route, BrowserRouter as Router, Routes } from 'react-router-dom'
+import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import { Register } from './register/Register'
+
+const Layout = () => {
+  return (
+    <div>
+      <Menu />
+      <main>
+        <Outlet /> {/* rutas hijas */}
+      </main>
+    </div>
+  )
+}
 
 function App() {
   useFlowBiteLoader()
@@ -13,10 +24,15 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={userData.login ? <>
-          <Menu />
-          <Home />
-        </> : <Login />} />
+        {/* Si el usuario está logueado, redirigir automáticamente a /clientes */}
+        <Route
+          path="/"
+          element={userData.login ? <Navigate to="/clientes" replace /> : <Login />}
+        />
+        {/* Rutas protegidas, envueltas en Layout */}
+        <Route element={userData.login ? <Layout /> : <Navigate to="/" replace />}>
+          <Route path="/clientes" element={<Home />} />
+        </Route>
         <Route path="/register" element={<Register />} />
       </Routes>
     </Router>

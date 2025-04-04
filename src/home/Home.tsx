@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { fetchTraslados } from "../fetch/fetchTraslados"
+//import { fetchTraslados } from "../fetch/fetchTraslados"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { emissionFactors } from "../data/emisionData"
 import { exportToExcel } from "./DownloadExcel"
@@ -7,57 +7,71 @@ import { saveTraslado } from "../mutations/saveTraslado"
 import { deleteTraslado } from "../mutations/deleteTraslado"
 import { updateTraslado } from "../mutations/updateTraslado"
 import { fetchUsers, User } from "../fetch/fetchUsers"
+import { saveCliente } from "../mutations/saveCliente"
+import { userDataAtom } from "../atoms/userDataAtom"
+import { useAtom } from "jotai"
 
 const initialForm = {
-    partida: "",
-    destino: "",
-    transporte: "",
-    fecha: "",
-    kilometros: "",
-    trabajador: "",
-    idaVuelta: false,
+    nombre: "",
+    email: "",
+    telefono: "",
+    id_usuario: ""
 }
 export type InitialFormType = typeof initialForm
 
 export const Home = () => {
+    const [userData,] = useAtom(userDataAtom)
     const [isEditMode, setIsEditMode] = useState(false)
     const [actualID, setActualID] = useState("")
     const queryClient = useQueryClient()
     const [formData, setFormData] = useState(initialForm)
     const [filtro, setFiltro] = useState("")
 
-    const { data: traslados = [], isLoading, isError, error } = useQuery({
-        queryKey: ["traslados"],
-        queryFn: fetchTraslados,
-    })
-    const { data: trabajadores = [] } = useQuery({
-        queryKey: ["trabajadores"],
-        queryFn: fetchUsers,
-    })
+    // const { data: traslados = [], isLoading, isError, error } = useQuery({
+    //     queryKey: ["traslados"],
+    //     queryFn: fetchTraslados,
+    // })
+    // const { data: trabajadores = [] } = useQuery({
+    //     queryKey: ["trabajadores"],
+    //     queryFn: fetchUsers,
+    // })
 
-    const trabajadoresFiltrados = trabajadores.filter((t: User) =>
-        t.name.toLowerCase().includes(formData.trabajador.toLowerCase())
-    )
+    // const trabajadoresFiltrados = trabajadores.filter((t: User) =>
+    //     t.name.toLowerCase().includes(formData.trabajador.toLowerCase())
+    // )
 
 
-    const trasladosFiltrados = traslados.filter((traslado) =>
-        traslado.trabajador.toLowerCase().includes(filtro.toLowerCase()) ||
-        traslado.partida.toLowerCase().includes(filtro.toLowerCase()) ||
-        traslado.destino.toLowerCase().includes(filtro.toLowerCase())
-    )
+    // const trasladosFiltrados = traslados.filter((traslado) =>
+    //     traslado.trabajador.toLowerCase().includes(filtro.toLowerCase()) ||
+    //     traslado.partida.toLowerCase().includes(filtro.toLowerCase()) ||
+    //     traslado.destino.toLowerCase().includes(filtro.toLowerCase())
+    // )
 
     const mutation = useMutation({
-        mutationFn: saveTraslado,
+        mutationFn: saveCliente,
         onSuccess: () => {
-            alert("Traslado guardado con éxito")
+            alert("Cliete guardado con éxito")
             setFormData(initialForm)
-            void queryClient.invalidateQueries({ queryKey: ["traslados"] })
+            void queryClient.invalidateQueries({ queryKey: ["clientes"] })
         },
         onError: (error) => {
-            console.error("Error al guardar el traslado:", error)
-            alert("Hubo un error al guardar el traslado")
+            console.error("Error al guardar el cliente:", error)
+            alert("Hubo un error al guardar el cliente")
         },
     })
+
+    // const mutation = useMutation({
+    //     mutationFn: saveTraslado,
+    //     onSuccess: () => {
+    //         alert("Traslado guardado con éxito")
+    //         setFormData(initialForm)
+    //         void queryClient.invalidateQueries({ queryKey: ["traslados"] })
+    //     },
+    //     onError: (error) => {
+    //         console.error("Error al guardar el traslado:", error)
+    //         alert("Hubo un error al guardar el traslado")
+    //     },
+    // })
 
     const deleteMutation = useMutation({
         mutationFn: deleteTraslado,
@@ -71,21 +85,22 @@ export const Home = () => {
         },
     })
 
-    const mutationUpdate = useMutation({
-        mutationFn: updateTraslado,
-        onSuccess: () => {
-            void queryClient.invalidateQueries({ queryKey: ["traslados"] })
-            setIsEditMode(false)
-            setFormData(initialForm)
-            setActualID("")
-            alert("Traslado actualizado con éxito")
-        },
-    })
+    // const mutationUpdate = useMutation({
+    //     mutationFn: updateTraslado,
+    //     onSuccess: () => {
+    //         void queryClient.invalidateQueries({ queryKey: ["traslados"] })
+    //         setIsEditMode(false)
+    //         setFormData(initialForm)
+    //         setActualID("")
+    //         alert("Traslado actualizado con éxito")
+    //     },
+    // })
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const target = e.target as HTMLInputElement;
         setFormData(prev => ({
             ...prev,
+            id_usuario: userData.id ?? "",
             [target.name]: target.type === "checkbox" ? target.checked : target.value,
         }))
     }
@@ -96,19 +111,19 @@ export const Home = () => {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
-        if (isEditMode) {
-            mutationUpdate.mutate({
-                _id: actualID,
-                partida: formData.partida,
-                destino: formData.destino,
-                transporte: formData.transporte,
-                fecha: formData.fecha,
-                kilometros: Number(formData.kilometros),
-                trabajador: formData.trabajador,
-                idaVuelta: formData.idaVuelta,
-            })
-            return
-        }
+        // if (isEditMode) {
+        //     mutationUpdate.mutate({
+        //         _id: actualID,
+        //         partida: formData.partida,
+        //         destino: formData.destino,
+        //         transporte: formData.transporte,
+        //         fecha: formData.fecha,
+        //         kilometros: Number(formData.kilometros),
+        //         trabajador: formData.trabajador,
+        //         idaVuelta: formData.idaVuelta,
+        //     })
+        //     return
+        // }
         mutation.mutate(formData)
     }
 
@@ -117,125 +132,73 @@ export const Home = () => {
         setTimeout(() => { window.scrollTo({ top: 0, behavior: "smooth" }) }, 10)
         setIsEditMode(true)
         setActualID(_id)
-        const trasladoSeleccionado = traslados.find((t) => t._id === _id)
+        //const trasladoSeleccionado = traslados.find((t) => t._id === _id)
 
 
-        if (trasladoSeleccionado) {
-            console.log(trasladoSeleccionado.fecha)
-            setFormData({
-                partida: trasladoSeleccionado.partida || "",
-                destino: trasladoSeleccionado.destino || "",
-                transporte: trasladoSeleccionado.transporte || "",
-                fecha: trasladoSeleccionado.fecha ? trasladoSeleccionado.fecha.split("T")[0] : "",
-                kilometros: trasladoSeleccionado.kilometros.toString() || "",
-                trabajador: trasladoSeleccionado.trabajador || "",
-                idaVuelta: trasladoSeleccionado.idaVuelta || false,
-            })
-        }
+        // if (trasladoSeleccionado) {
+        //     console.log(trasladoSeleccionado.fecha)
+        //     setFormData({
+        //         partida: trasladoSeleccionado.partida || "",
+        //         destino: trasladoSeleccionado.destino || "",
+        //         transporte: trasladoSeleccionado.transporte || "",
+        //         fecha: trasladoSeleccionado.fecha ? trasladoSeleccionado.fecha.split("T")[0] : "",
+        //         kilometros: trasladoSeleccionado.kilometros.toString() || "",
+        //         trabajador: trasladoSeleccionado.trabajador || "",
+        //         idaVuelta: trasladoSeleccionado.idaVuelta || false,
+        //     })
+        // }
     }
 
-    if (isLoading) return <p>Cargando traslados...</p>
-    if (isError) return <p className="text-red-500">Error: {error instanceof Error ? error.message : "Error desconocido"}</p>
+    // if (isLoading) return <p>Cargando traslados...</p>
+    // if (isError) return <p className="text-red-500">Error: {error instanceof Error ? error.message : "Error desconocido"}</p>
 
     return (
         <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-5">
             {/* Formulario */}
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg w-96 mb-6">
-                <h2 className="text-xl font-semibold mb-4">Registrar Traslado</h2>
+                <h2 className="text-xl font-semibold mb-4">Registrar Cliente</h2>
 
-                <label className="block mb-2">Dirección de Partida</label>
-                <input type="text" minLength={4} name="partida" value={formData.partida} onChange={handleChange}
+                <label className="block mb-2">Nombre</label>
+                <input type="text" minLength={4} name="nombre" value={formData.nombre} onChange={handleChange}
                     className="w-full p-2 border rounded mb-3" required />
 
-                <label className="block mb-2">Dirección de Destino</label>
-                <input type="text" minLength={4} name="destino" value={formData.destino} onChange={handleChange}
+                <label className="block mb-2">Correo electrónico</label>
+                <input type="email" placeholder="example@gmail.com" name="email" value={formData.email} onChange={handleChange}
                     className="w-full p-2 border rounded mb-3" required />
 
-                <label className="block mb-2">Medio de Transporte</label>
-                <select
-                    name="transporte"
-                    value={formData.transporte}
-                    onChange={handleChange}
-                    className="w-full p-2 border rounded mb-3"
-                    required
-                >
-                    <option value="">Seleccione...</option>
-                    <option value="Metro (Tren, Subway, Subterráneo)">Metro (Tren, Subway, Subterráneo)</option>
-                    <option value="Auto (Gasolina)">Auto (Gasolina)</option>
-                    <option value="Camioneta (Diésel)">Camioneta (Diésel)</option>
-                    <option value="Motocicleta (Gasolina)">Motocicleta (Gasolina)</option>
-                    <option value="Bus Transantiago (Transporte público)">Bus Transantiago (Transporte público)</option>
-                    <option value="Bus (Vehículo privado)">Bus (Vehículo privado)</option>
-                    <option value="Avión (Nacional)">Avión (Nacional)</option>
-                    <option value="Avión (Internacional)">Avión (Internacional)</option>
-                    <option value="Caminando">Caminando</option>
-                </select>
+                <label className="block mb-2">Telefono</label>
+                <input type="text" minLength={10} name="telefono" value={formData.telefono} onChange={handleChange}
+                    className="w-full p-2 border rounded mb-3" required  pattern="[0-9]*" />
 
-
-                <label className="block mb-2">Fecha del Viaje</label>
-                <input type="date" name="fecha" value={formData.fecha} onChange={handleChange}
-                    className="w-full p-2 border rounded mb-3" required />
-
-                <label className="block mb-2">Kilómetros Recorridos</label>
-                <input type="number" min="1" name="kilometros" value={formData.kilometros} onChange={handleChange}
-                    className="w-full p-2 border rounded mb-3" required />
-
-                <label className="block mb-2">Nombre del Trabajador</label>
-                <div className="relative">
-                    <input
-                        type="text"
-                        name="trabajador"
-                        minLength={4}
-                        value={formData.trabajador}
-                        onChange={handleChange}
-                        className="w-full p-2 border rounded mb-3"
-                        required
-                    />
-                    {trabajadoresFiltrados.map((trabajador: User) => (
-                        <li
-                            key={trabajador._id}
-                            className="p-2 cursor-pointer hover:bg-gray-200"
-                            onClick={() => setFormData({ ...formData, trabajador: trabajador.name })}
-                        >
-                            {trabajador.name}
-                        </li>
-                    ))}
-                </div>
-
-                <div className="flex items-center mb-4">
-                    <input type="checkbox" name="idaVuelta" checked={formData.idaVuelta} onChange={handleChange}
-                        className="mr-2" />
-                    <label>¿Es ida y vuelta?</label>
-                </div>
                 {
                     isEditMode ?
                         <button type="submit"
                             className="w-full bg-green-500 text-white p-2 rounded hover:bg-green-600"
                             disabled={mutation.isPending}>
-                            {mutation.isPending ? "Editando..." : "Editar Traslado"}
+                            {mutation.isPending ? "Editando..." : "Editar Cliente"}
                         </button>
                         :
                         <button type="submit"
                             className="w-full bg-blue-500 text-white p-2 rounded hover:bg-blue-600"
                             disabled={mutation.isPending}>
-                            {mutation.isPending ? "Guardando..." : "Guardar Traslado"}
+                            {mutation.isPending ? "Guardando..." : "Guardar Cliente"}
                         </button>
                 }
             </form>
 
-            {/* Listado de Traslados */}
+            {/* Listado */}
             <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-screen-2xl mx-auto mb-6">
                 <div className="overflow-x-auto">
-                    <h2 className="text-xl font-semibold mb-4 text-center">Lista de Traslados</h2>
+                    <h2 className="text-xl font-semibold mb-4 text-center">Lista de Clientes</h2>
                     {/* Input de Filtrado */}
                     <input
                         type="text"
-                        placeholder="Filtrar por trabajador, partida o destino..."
+                        placeholder="Filtrar por nombre, correo o telefono..."
                         value={filtro}
                         onChange={(e) => setFiltro(e.target.value)}
                         className="mb-4 p-2 border rounded w-full"
                     />
-                    {isLoading && <p className="text-center">Cargando traslados...</p>}
+                    {/* {isLoading && <p className="text-center">Cargando traslados...</p>}
                     {isError && <p className="text-center text-red-500">Error al cargar traslados</p>}
                     <button
                         onClick={() => exportToExcel(traslados)}
@@ -310,7 +273,7 @@ export const Home = () => {
                                 </tbody>
                             </table>
                         </div>
-                    )}
+                    )} */}
                 </div>
             </div>
         </div>
