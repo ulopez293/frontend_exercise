@@ -6,6 +6,7 @@ import useFlowBiteLoader from './hooks/Flowbite/useFlowBiteLoader'
 import { Home } from './home/Home'
 import { BrowserRouter as Router, Routes, Route, Outlet, Navigate } from 'react-router-dom'
 import { Register } from './register/Register'
+import { Proyectos } from './proyectos/Proyectos'
 
 const Layout = () => {
   return (
@@ -32,6 +33,7 @@ function App() {
         {/* Rutas protegidas, envueltas en Layout */}
         <Route element={userData.login ? <Layout /> : <Navigate to="/" replace />}>
           <Route path="/clientes" element={<Home />} />
+          <Route path="/proyectos" element={<Proyectos />} />
         </Route>
         <Route path="/register" element={<Register />} />
       </Routes>

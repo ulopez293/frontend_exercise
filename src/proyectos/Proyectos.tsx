@@ -15,7 +15,7 @@ const initialForm = {
 }
 export type InitialFormType = typeof initialForm
 
-export const Home = () => {
+export const Proyectos = () => {
     const [userData,] = useAtom(userDataAtom)
     const [isEditMode, setIsEditMode] = useState(false)
     const [actualID, setActualID] = useState("")
@@ -125,7 +125,7 @@ export const Home = () => {
         <div className="flex flex-col items-center min-h-screen bg-gray-100 pt-5">
             {/* Formulario */}
             <form onSubmit={handleSubmit} className="bg-white p-6 rounded-lg shadow-lg w-96 mb-6">
-                <h2 className="text-xl font-semibold mb-4">Registrar Cliente</h2>
+                <h2 className="text-xl font-semibold mb-4">Registrar Proyecto</h2>
 
                 <label className="block mb-2">Nombre</label>
                 <input type="text" minLength={4} name="nombre" value={formData.nombre} onChange={handleChange}

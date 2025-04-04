@@ -2,7 +2,10 @@ import { Button, Card, Label, TextInput } from 'flowbite-react'
 import { FormEvent, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import backgroundIMG from '../assets/img/background.jpeg'
-
+interface RegisterResponse {
+    message?: string;
+    error?: string;
+}
 export const Register = () => {
     const [name, setName] = useState<string>('')
     const [email, setEmail] = useState<string>('')
@@ -21,19 +24,19 @@ export const Register = () => {
                 body: JSON.stringify(userData),
             })
     
-            const data = await response.json()
+            const data: RegisterResponse = await response.json() as RegisterResponse
             console.log("Data from backend:", data)
             if (!response.ok) {
                 // Aquí manejas la respuesta de error correctamente
-                setError(data.error || 'Hubo un error al registrar el usuario.')
-                throw new Error(data.error || "Error al registrar usuario")
+                setError(data.error ?? 'Hubo un error al registrar el usuario.')
+                throw new Error(data.error ?? "Error al registrar usuario")
             }
 
-            setSuccess(data.message || 'Usuario registrado exitosamente')
+            setSuccess(data.message ?? 'Usuario registrado exitosamente')
             alert("Usuario registrado exitosamente")
     
             setTimeout(() => {
-                navigate('/clientes')
+                void navigate('/clientes')
             }, 2000)
         } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Error de conexión, por favor inténtalo más tarde.'
